@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <bean id="proxyAccountService" factory-bean="beanFactory" factory-method="getAccountService"></bean>
+
+    <bean id="beanFactory" class="dyliang.factory.BeanFactory">
+        <property name="accountService" ref="accountService"></property>
+        <property name="txManager" ref="txManager"></property>
+    </bean>
+
+    <bean id="accountService" class="dyliang.service.impl.IAccountServiceImpl">
+        <property name="accountDao" ref="accountDao" ></property>
+        <property name="txManager" ref="txManager"></property>
+    </bean>
+
+    <bean id="txManager" class="dyliang.utils.TransactionManager">
+        <property name="connectionUtils" ref="connectionUtils"></property>
+    </bean>
+
+    <bean id="connectionUtils" class="dyliang.utils.ConnectionUtils">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+    <bean id="accountDao" class="dyliang.dao.impl.IAccountImpl">
+        <property name="runner" ref="runner"></property>
+        <property name="connectionUtils" ref="connectionUtils"></property>
+    </bean>
+
+    <bean id="runner" class="org.apache.commons.dbutils.QueryRunner" scope="prototype"></bean>
+
+    <!--
+    <bean id="runner" class="org.apache.commons.dbutils.QueryRunner" scope="prototype">
+        <constructor-arg name="ds" ref="dataSource"></constructor-arg>
+    </bean>
+    -->
+
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+    <property name="driverClass" value="com.mysql.cj.jdbc.Driver"></property>
+    <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/sql_store?serverTimezone=GMT"></property>
+    <property name="user" value="root"></property>
+    <property name="password" value="120809"></property>
+</bean>
+</beans>
